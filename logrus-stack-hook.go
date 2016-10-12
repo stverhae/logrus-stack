@@ -14,7 +14,7 @@ import (
 func NewHook(callerLevels []logrus.Level, stackLevels []logrus.Level) LogrusStackHook {
 	return LogrusStackHook{
 		CallerLevels: callerLevels,
-		StackLevels: stackLevels,
+		StackLevels:  stackLevels,
 	}
 }
 
@@ -23,7 +23,7 @@ func NewHook(callerLevels []logrus.Level, stackLevels []logrus.Level) LogrusStac
 func StandardHook() LogrusStackHook {
 	return LogrusStackHook{
 		CallerLevels: logrus.AllLevels,
-		StackLevels: []logrus.Level{logrus.PanicLevel, logrus.FatalLevel, logrus.ErrorLevel},
+		StackLevels:  []logrus.Level{logrus.PanicLevel, logrus.FatalLevel, logrus.ErrorLevel},
 	}
 }
 
@@ -35,7 +35,7 @@ type LogrusStackHook struct {
 
 	// Set levels to StackLevels for which "stack" value may be set,
 	// providing the full stack (minus logrus).
-	StackLevels  []logrus.Level
+	StackLevels []logrus.Level
 }
 
 // Levels provides the levels to filter.
@@ -48,10 +48,10 @@ func (hook LogrusStackHook) Fire(entry *logrus.Entry) error {
 	var skipFrames int
 	if len(entry.Data) == 0 {
 		// When WithField(s) is not used, we have 8 logrus frames to skip.
-		skipFrames = 8
+		skipFrames = 7
 	} else {
 		// When WithField(s) is used, we have 6 logrus frames to skip.
-		skipFrames = 6
+		skipFrames = 5
 	}
 
 	var frames stack.Stack
@@ -72,7 +72,7 @@ func (hook LogrusStackHook) Fire(entry *logrus.Entry) error {
 		// If we have a frame, we set it to "caller" field for assigned levels.
 		for _, level := range hook.CallerLevels {
 			if entry.Level == level {
-				entry.Data["caller"] = frames[0]
+				entry.Data["_caller"] = frames[0]
 				break
 			}
 		}
@@ -80,7 +80,7 @@ func (hook LogrusStackHook) Fire(entry *logrus.Entry) error {
 		// Set the available frames to "stack" field.
 		for _, level := range hook.StackLevels {
 			if entry.Level == level {
-				entry.Data["stack"] = frames
+				entry.Data["_stack"] = frames
 				break
 			}
 		}
