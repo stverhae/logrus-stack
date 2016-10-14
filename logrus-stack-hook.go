@@ -72,7 +72,7 @@ func (hook LogrusStackHook) Fire(entry *logrus.Entry) error {
 		// If we have a frame, we set it to "caller" field for assigned levels.
 		for _, level := range hook.CallerLevels {
 			if entry.Level == level {
-				entry.Data["_caller"] = frames[0]
+				entry.Data["_@caller"] = frames[0]
 				break
 			}
 		}
@@ -80,7 +80,7 @@ func (hook LogrusStackHook) Fire(entry *logrus.Entry) error {
 		// Set the available frames to "stack" field.
 		for _, level := range hook.StackLevels {
 			if entry.Level == level {
-				entry.Data["_stack"] = frames
+				entry.Data["_@stack"] = frames
 				break
 			}
 		}
